@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    user: root
+    container_name: prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./docker/prometheus/config:/etc/prometheus
+      - ./docker/prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
+    networks:
+      - metrics
+
+networks:
+  metrics:
+    driver: bridge

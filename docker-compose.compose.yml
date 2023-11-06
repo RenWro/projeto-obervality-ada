@@ -1,0 +1,17 @@
+version: '3.4'
+
+service:
+  application:
+  build:
+    context: '/C:/Users/kamila.antunes/Documents/projeto-observality-ada/node-metrics.js'
+    dockerfile: 'C:/Users/kamila.antunes/Documents/projeto-observality-ada/node-metrics.Dockerfile'
+  container_name: application
+  restart: always
+  ports:
+    - 5000:3000
+  networks:
+    - metrics
+  
+networks:
+  metrics:
+    driver: bridge
