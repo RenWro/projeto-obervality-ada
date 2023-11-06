@@ -125,9 +125,9 @@ Resources:
           usermod -aG docker ssm-user
           cd /home/ssm-user
           git clone https://github.com/kamilaantunes/projeto-obervality-ada.git
-          rm -rf projeto-observability/stack-cloudformation.yml Projeto-Observability/README.md Projeto-Observability/exporters Dashboardv1.png Dashboard.json AlertSlack.png
-          mv projeto-observability/* .
-          rm -rf projeto-observability
+          rm -rf projeto-observability-ada/stack-cloudformation.yml Projeto-Observability/README.md Projeto-Observability/exporters Dashboardv1.png Dashboard.json AlertSlack.png
+          mv projeto-observability-ada/* .
+          rm -rf projeto-observability-ada
           sysctl -w vm.max_map_count=262144
           echo "INSTANCE_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)" > .env
           docker-compose -p projeto  --env-file .env up -d
