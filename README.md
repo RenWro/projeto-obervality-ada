@@ -66,8 +66,7 @@ Login: admin | Senha: admin
 
 
 
-<h2>Evidências do Dashboard e do Graylog</h2>
+<h2>Evidências do Dashboard</h2>
 <div align="center">
 <img src="https://github.com/kamilaantunes/projeto-obervality-ada/assets/134458911/de62c59c-4979-40bf-bc1d-cedabf8dfc4d">
 </div>
-![280882718-f83f3a9f-446e-4080-bf8d-ec3a2a8f4bfe](https://github.com/kamilaantunes/projeto-obervality-ada/assets/134458911/de62c59c-4979-40bf-bc1d-cedabf8dfc4d)
