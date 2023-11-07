@@ -68,5 +68,5 @@ Login: admin | Senha: admin
 
 <h2>Evidências do Dashboard e do Graylog</h2>
 <div align="center">
-<img src="https://github.com/RenWro/RenWro/assets/134458911/29143b94-27ae-4226-9454-47a0d54627c0">
+<img src="">
 </div>
