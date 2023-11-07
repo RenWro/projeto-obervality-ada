@@ -125,7 +125,7 @@ Resources:
           usermod -aG docker ssm-user
           cd /home/ssm-user
           git clone https://github.com/kamilaantunes/projeto-obervality-ada.git
-          rm -rf projeto-observability-ada/stack-cloudformation.yml Projeto-Observability/README.md Projeto-Observability/exporters Dashboardv1.png Dashboard.json AlertSlack.png
+          rm -rf projeto-observability-ada/stack-cloudformation.yml projeto-obervality-ada/README.md projeto-obervality-ada/exporters 
           mv projeto-observability-ada/* .
           rm -rf projeto-observability-ada
           sysctl -w vm.max_map_count=262144
