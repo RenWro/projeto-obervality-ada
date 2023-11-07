@@ -1,4 +1,4 @@
-![image](https://github.com/kamilaantunes/projeto-obervality-ada/assets/55604601/f83f3a9f-446e-4080-bf8d-ec3a2a8f4bfe)<h1>Projeto-Observability</h1>
+<h1>Projeto-Observability</h1>
 
 <h2>Projeto desenvolvido para a disciplina de Observability do curso de DevOps da Ada Tech + Núclea</h2>
 
@@ -67,4 +67,4 @@ Login: admin | Senha: admin
 
 
 <h2>Evidências do Dashboard e do Graylog</h2>
-![image](https://github.com/kamilaantunes/projeto-obervality-ada/assets/55604601/50c5db14-cbcc-4a96-8e4c-0d6340586420)
+![image](https://github.com/kamilaantunes/projeto-obervality-ada/assets/55604601/f83f3a9f-446e-4080-bf8d-ec3a2a8f4bfe)
