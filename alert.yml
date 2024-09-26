@@ -1,0 +1,11 @@
+groups:
+  - name: ProjetoAlerts
+    rules:
+      - alert: InstanceDown
+        expr: up{job="services"} < 1
+        for: 5m
+        annotations:
+          title: 'Instance {{ $labels.instance }} down'
+          description: '{{ $labels.instance }} of job {{ $labels.job }} esta inativa a mais de 5 minutos.'
+        labels:
+          severity: 'critical'

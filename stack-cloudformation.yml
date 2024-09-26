@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Infraestrutura para o projeto de Observabilidade
+
+################################### PARAMETERS ###################################
+
+Parameters:
+
+  IpAddress:
+    Type: String
+    Description: IP para acesso ex 123.123.123.123 https://ipcost.com/pt
+    Default: 0.0.0.0
+
+  InstanceType:
+      Type: String
+      Description: EC2 instance type
+      Default: t3.medium
+      AllowedValues:
+        - t2.micro
+        - t2.medium
+        - t3.micro
+        - t3.medium
+        - t3-large
+
+################################### METADATA ###################################
+
+Metadata:
+
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "NETWORK"
+        Parameters:
+          - IpAddress
+      - Label:
+          default: "EC2"
+        Parameters:
+          - InstanceType
+    ParameterLabels:
+      IpAddress:
+        default: "Qual é o seu IP?"
+      InstanceType:
+        default: "Qual o tipo de instancia EC2 que deseja criar?"
+
+################################### MAPPINGS ###################################
+
+Mappings:
+
+  AWSRegionToAMI:
+    us-east-1:
+      AMI: ami-01eccbf80522b562b
+
+################################### RESOURCES ###################################
+
+Resources:
+
+  NewKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: !Sub '${AWS::StackName}-EC2KeyPair'
+
+  EC2RoleSSM:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for EC2 instance
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+          CidrIp: !Sub '${IpAddress}/32'
+
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref EC2RoleSSM
+
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [AWSRegionToAMI, !Ref AWS::Region, AMI]
+      InstanceType: !Ref InstanceType
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 12
+      SecurityGroupIds:
+        - !Ref EC2SecurityGroup
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      KeyName: !Ref NewKeyPair
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum update -y
+          yum install -y telnet
+          yum install -y nc
+          yum install -y rsyslog
+          yum install -y git
+          amazon-linux-extras install -y docker
+          service docker start
+          systemctl enable docker
+          curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          adduser -m ssm-user
+          tee /etc/sudoers.d/ssm-agent-users <<'EOF'
+          ssm-user ALL=(ALL) NOPASSWD:ALL
+          EOF
+          chmod 440 /etc/sudoers.d/ssm-agent-users
+          usermod -aG docker ssm-user
+          cd /home/ssm-user
+          git clone https://github.com/kamilaantunes/projeto-obervality-ada.git
+          rm -rf projeto-observability-ada/stack-cloudformation.yml projeto-obervality-ada/README.md projeto-obervality-ada/exporters 
+          mv projeto-observability-ada/* .
+          rm -rf projeto-observability-ada
+          sysctl -w vm.max_map_count=262144
+          echo "INSTANCE_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)" > .env
+          docker-compose -p projeto  --env-file .env up -d
+          echo "GRAYLOG_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' projeto-graylog-1)" >> .env
+
+################################### STACK OUTPUTS ###################################
+
+Outputs:
+  InstanceIp:
+    Description: IP publico da instancia EC2
+    Value: !GetAtt EC2Instance.PublicIp
+    Export:
+      Name: InstanceIp
